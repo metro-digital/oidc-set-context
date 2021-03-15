@@ -1,11 +1,32 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'oidc set context'
+description: 'Set kubectl context using OIDC authorization'
+author: 'METRO.digital'
 inputs:
-  milliseconds: # change this
+  oidc_url:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'OIDC provider url to get token'
+    default: ''
+  oidc_username:
+    required: true
+    description: 'OIDC provider username'
+    default: ''
+  oidc_password:
+    required: true
+    description: 'OIDC provider password'
+    default: ''
+
+  k8s_url:
+    required: true
+    description: 'Cluster Url'
+    default: ''
+  k8s_namespace:
+    required: false
+    description: 'Cluster namespace'
+    default: 'default'
+  k8s_skip_tls_verify:
+    required: false
+    description: 'Cluster skip tls verification'
+    default: 'true'
 runs:
   using: 'node12'
   main: 'dist/index.js'
