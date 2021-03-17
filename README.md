@@ -40,8 +40,8 @@ Cluster skip tls verification. Default value `true`.
 ```yaml
 uses: metro-digital/oid-set-context@v0.x
 with:
-    oidc_url: ${{ secrets.OIDC_URL' }}
-    oidc_username: ${{ secrets.TU_ID' }}
-    oidc_username: ${{ secrets.TU_SECRET' }}
-    k8s_url: ${{ secrets.CLUSTER_URL' }}
+    oidc_url: ${{ secrets.OIDC_URL }}
+    oidc_username: ${{ secrets.TU_ID }}
+    oidc_password: ${{ secrets.TU_SECRET }}
+    k8s_url: ${{ secrets.CLUSTER_URL }}
 ```
