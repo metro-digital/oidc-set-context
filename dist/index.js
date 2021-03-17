@@ -2763,55 +2763,55 @@ const io = __importStar(__nccwpck_require__(436));
 const path = __importStar(__nccwpck_require__(622));
 const fs = __importStar(__nccwpck_require__(747));
 const url = __importStar(__nccwpck_require__(835));
-function setKubernetesContext(oidc_url, token, oidc_username, k8s_url, k8s_namespace, k8s_skip_tls_verify) {
+function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify) {
     return __awaiter(this, void 0, void 0, function* () {
-        const runnerTempDirectory = process.env['RUNNER_TEMP'] || '/tmp/';
+        const runnerTempDirectory = process.env.RUNNER_TEMP || '/tmp/';
         const dirPath = path.join(runnerTempDirectory, `kube_config_${Date.now()}`);
         yield io.mkdirP(dirPath);
-        const kubeConfigPath = path.join(dirPath, `custom-config`);
+        const kubeConfigPath = path.join(dirPath, 'custom-config');
         core.debug(`Writing kube config contents to ${kubeConfigPath}`);
-        const oidcUrlParsed = url.parse(oidc_url);
+        const oidcUrlParsed = new url.URL(oidcUrl);
         const config = {
-            "apiVersion": "v1",
-            "kind": "Config",
-            "clusters": [
+            apiVersion: 'v1',
+            kind: 'Config',
+            clusters: [
                 {
-                    "name": "default-cluster",
-                    "cluster": {
-                        "insecure-skip-tls-verify": (k8s_skip_tls_verify.toLowerCase() == 'true'),
-                        "server": oidc_url
+                    name: 'default-cluster',
+                    cluster: {
+                        'insecure-skip-tls-verify': (k8sSkipTlsVerify.toLowerCase() === 'true'),
+                        server: oidcUrl
                     }
                 }
             ],
-            "users": [
+            users: [
                 {
-                    "name": "default-user",
-                    "user": {
-                        "auth-provider": {
-                            "config": {
-                                "client-id": oidc_username,
-                                "id-token": token,
-                                "idp-issuer-url": `${oidcUrlParsed.protocol}//${oidcUrlParsed.host}`
+                    name: 'default-user',
+                    user: {
+                        'auth-provider': {
+                            config: {
+                                'client-id': oidcUsername,
+                                'id-token': token,
+                                'idp-issuer-url': `${oidcUrlParsed.origin}`
                             },
-                            "name": "oidc"
+                            name: 'oidc'
                         }
                     }
                 }
             ],
-            "contexts": [
+            contexts: [
                 {
-                    "context": {
-                        "cluster": "default-cluster",
-                        "namespace": k8s_namespace,
-                        "user": "default-user"
+                    context: {
+                        cluster: 'default-cluster',
+                        namespace: k8sNamespace,
+                        user: 'default-user'
                     },
-                    "name": "default-context"
+                    name: 'default-context'
                 }
             ],
-            "current-context": "default-context",
+            'current-context': 'default-context'
         };
         fs.writeFileSync(kubeConfigPath, JSON.stringify(config));
-        core.exportVariable('KUBECONFIG_BACKUP', process.env['KUBECONFIG']);
+        core.exportVariable('KUBECONFIG_BACKUP', process.env.KUBECONFIG);
         core.exportVariable('KUBECONFIG', dirPath);
         console.log('KUBECONFIG environment variable is set');
     });
@@ -2863,41 +2863,41 @@ const oidc = __importStar(__nccwpck_require__(544));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (os.platform() !== "linux") {
-                throw new Error("Only supported on linux platform");
+            if (os.platform() !== 'linux') {
+                throw new Error('Only supported on linux platform');
             }
-            const oidc_url = core.getInput("oidc_url");
-            if (!oidc_url) {
-                core.setFailed("OIDC url cannot be empty");
+            const oidcUrl = core.getInput('oidc_url');
+            if (!oidcUrl) {
+                core.setFailed('OIDC url cannot be empty');
                 return;
             }
-            const oidc_username = core.getInput("oidc_username");
-            if (!oidc_username) {
-                core.setFailed("OIDC username cannot be empty");
+            const oidcUsername = core.getInput('oidc_username');
+            if (!oidcUsername) {
+                core.setFailed('OIDC username cannot be empty');
                 return;
             }
-            const oidc_password = core.getInput("oidc_username");
-            if (!oidc_password) {
-                core.setFailed("OIDC username cannot be empty");
+            const oidcPassword = core.getInput('oidc_username');
+            if (!oidcPassword) {
+                core.setFailed('OIDC password cannot be empty');
                 return;
             }
-            const k8s_url = core.getInput("k8s_url");
-            if (!k8s_url) {
-                core.setFailed("OIDC username cannot be empty");
+            const k8sUrl = core.getInput('k8s_url');
+            if (!k8sUrl) {
+                core.setFailed('k8s url cannot be empty');
                 return;
             }
-            let k8s_namespace = core.getInput("k8s_namespace");
-            if (!k8s_namespace) {
-                k8s_namespace = "default";
+            let k8sNamespace = core.getInput('k8s_namespace');
+            if (!k8sNamespace) {
+                k8sNamespace = 'default';
             }
-            let k8s_skip_tls_verify = core.getInput("k8s_skip_tls_verify");
-            if (!k8s_skip_tls_verify) {
-                k8s_skip_tls_verify = "true";
+            let k8sSkipTlsVerify = core.getInput('k8s_skip_tls_verify');
+            if (!k8sSkipTlsVerify) {
+                k8sSkipTlsVerify = 'true';
             }
-            core.debug(`Given input\n\toidc_url: ${oidc_url}\n\toidc_username: ${oidc_username}\n\toidc_password: ${oidc_password}
-    \tk8s_url: ${k8s_url}\n\tk8s_namespace: ${k8s_namespace}\n\tk8s_skip_tls_verify: ${k8s_skip_tls_verify}`);
-            const token = yield oidc.getOIDCToken(oidc_url, oidc_username, oidc_password);
-            context.setKubernetesContext(oidc_url, token, oidc_username, k8s_url, k8s_namespace, k8s_skip_tls_verify);
+            core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
+    \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
+            const token = yield oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
+            context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -2951,15 +2951,15 @@ exports.getOIDCToken = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const base_64_1 = __importDefault(__nccwpck_require__(848));
-function getOIDCToken(oidc_url, oidc_username, oidc_password) {
+function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         let token = '';
         try {
-            yield node_fetch_1.default(`${oidc_url}&client_id=${oidc_username}`, {
+            yield node_fetch_1.default(`${oidcUrl}&client_id=${oidcUsername}`, {
                 method: 'POST',
                 timeout: 10000,
                 headers: {
-                    Authorization: 'Basic ' + base_64_1.default.encode(oidc_username + ':' + oidc_password),
+                    Authorization: 'Basic ' + base_64_1.default.encode(oidcUsername + ':' + oidcPassword),
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
@@ -2967,7 +2967,7 @@ function getOIDCToken(oidc_url, oidc_username, oidc_password) {
                 .then(res => { token = res.access_token || ''; });
         }
         catch (error) {
-            console.log(`Cannot get OIDC token`);
+            console.log('Cannot get OIDC token');
             core.setFailed(error.message);
         }
         return token;

@@ -1,52 +1,52 @@
-import * as os from "os"
-import * as core from "@actions/core"
-import * as context from "./context"
-import * as oidc from "./oidc"
+import * as os from 'os'
+import * as core from '@actions/core'
+import * as context from './context'
+import * as oidc from './oidc'
 
-export async function run(): Promise<void> {
+export async function run (): Promise<void> {
   try {
-    if (os.platform() !== "linux") {
-      throw new Error("Only supported on linux platform")
+    if (os.platform() !== 'linux') {
+      throw new Error('Only supported on linux platform')
     }
 
-    const oidc_url = core.getInput("oidc_url")
-    if (!oidc_url) {
-      core.setFailed("OIDC url cannot be empty")
+    const oidcUrl = core.getInput('oidc_url')
+    if (!oidcUrl) {
+      core.setFailed('OIDC url cannot be empty')
       return
     }
 
-    const oidc_username = core.getInput("oidc_username")
-    if (!oidc_username) {
-      core.setFailed("OIDC username cannot be empty")
+    const oidcUsername = core.getInput('oidc_username')
+    if (!oidcUsername) {
+      core.setFailed('OIDC username cannot be empty')
       return
     }
 
-    const oidc_password = core.getInput("oidc_username")
-    if (!oidc_password) {
-      core.setFailed("OIDC username cannot be empty")
+    const oidcPassword = core.getInput('oidc_username')
+    if (!oidcPassword) {
+      core.setFailed('OIDC password cannot be empty')
       return
     }
 
-    const k8s_url = core.getInput("k8s_url")
-    if (!k8s_url) {
-      core.setFailed("OIDC username cannot be empty")
+    const k8sUrl = core.getInput('k8s_url')
+    if (!k8sUrl) {
+      core.setFailed('k8s url cannot be empty')
       return
     }
 
-    let k8s_namespace = core.getInput("k8s_namespace")
-    if (!k8s_namespace) {
-      k8s_namespace = "default"
+    let k8sNamespace = core.getInput('k8s_namespace')
+    if (!k8sNamespace) {
+      k8sNamespace = 'default'
     }
 
-    let k8s_skip_tls_verify = core.getInput("k8s_skip_tls_verify")
-    if (!k8s_skip_tls_verify) {
-      k8s_skip_tls_verify = "true"
+    let k8sSkipTlsVerify = core.getInput('k8s_skip_tls_verify')
+    if (!k8sSkipTlsVerify) {
+      k8sSkipTlsVerify = 'true'
     }
-    core.debug(`Given input\n\toidc_url: ${oidc_url}\n\toidc_username: ${oidc_username}\n\toidc_password: ${oidc_password}
-    \tk8s_url: ${k8s_url}\n\tk8s_namespace: ${k8s_namespace}\n\tk8s_skip_tls_verify: ${k8s_skip_tls_verify}`)
+    core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
+    \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
 
-    const token = await oidc.getOIDCToken(oidc_url, oidc_username, oidc_password)
-    context.setKubernetesContext(oidc_url, token, oidc_username,k8s_url, k8s_namespace, k8s_skip_tls_verify)
+    const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword)
+    context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
   } catch (error) {
     core.setFailed(error.message)
   }
