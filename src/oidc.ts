@@ -7,7 +7,7 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
   let token = ''
   const newSearchParams = new URLSearchParams(oidcUrl.searchParams)
   newSearchParams.append('client_id', oidcUsername)
-  const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, {
+  const request = {
     method: 'POST',
     timeout: 10000,
     headers: {
@@ -15,7 +15,11 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: newSearchParams
-  })
+  }
+
+  console.log(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`)
+  console.log(request)
+  const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, request)
 
   const data = await response.json()
 

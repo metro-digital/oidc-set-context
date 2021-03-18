@@ -2934,7 +2934,7 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
         let token = '';
         const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
         newSearchParams.append('client_id', oidcUsername);
-        const response = yield node_fetch_1.default(`${oidcUrl.origin}${oidcUrl.pathname}`, {
+        const request = {
             method: 'POST',
             timeout: 10000,
             headers: {
@@ -2942,7 +2942,10 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: newSearchParams
-        });
+        };
+        console.log(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
+        console.log(request);
+        const response = yield node_fetch_1.default(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
         const data = yield response.json();
         console.log(response.ok);
         console.log(response.status);
