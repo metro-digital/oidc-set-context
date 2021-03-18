@@ -2,6 +2,7 @@ import * as os from 'os'
 import * as core from '@actions/core'
 import * as context from './context'
 import * as oidc from './oidc'
+import { URL } from 'url'
 
 export async function run (): Promise<void> {
   try {
@@ -9,11 +10,11 @@ export async function run (): Promise<void> {
       throw new Error('Only supported on linux platform')
     }
 
-    const oidcUrl = core.getInput('oidc_url')
-    if (!oidcUrl) {
-      core.setFailed('OIDC url cannot be empty')
-      return
+    const oidcUrlString = core.getInput('oidc_url')
+    if (!oidcUrlString) {
+      throw new Error('OIDC url cannot be empty')
     }
+    const oidcUrl = new URL(oidcUrlString)
 
     const oidcUsername = core.getInput('oidc_username')
     if (!oidcUsername) {
@@ -33,15 +34,14 @@ export async function run (): Promise<void> {
       return
     }
 
-    let k8sNamespace = core.getInput('k8s_namespace')
+    const k8sNamespace = core.getInput('k8s_namespace')
     if (!k8sNamespace) {
-      k8sNamespace = 'default'
+      core.setFailed('k8s url cannot be empty')
+      return
     }
 
-    let k8sSkipTlsVerify = core.getInput('k8s_skip_tls_verify')
-    if (!k8sSkipTlsVerify) {
-      k8sSkipTlsVerify = 'true'
-    }
+    const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true')
+
     core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
     \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
 

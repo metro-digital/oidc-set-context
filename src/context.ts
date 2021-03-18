@@ -3,16 +3,15 @@ import * as core from '@actions/core'
 import * as io from '@actions/io'
 import * as path from 'path'
 import * as fs from 'fs'
-import * as url from 'url'
+import { URL } from 'url'
 
-export async function setKubernetesContext (oidcUrl: string, token: string, oidcUsername: string, k8sUrl: string, k8sNamespace: string, k8sSkipTlsVerify: string) {
+export async function setKubernetesContext (oidcUrl: URL, token: string, oidcUsername: string, k8sUrl: string, k8sNamespace: string, k8sSkipTlsVerify: boolean) {
   const runnerTempDirectory = process.env.RUNNER_TEMP || '/tmp/'
   const dirPath = path.join(runnerTempDirectory, `kube_config_${Date.now()}`)
   await io.mkdirP(dirPath)
   const kubeConfigPath = path.join(dirPath, 'custom-config')
 
   core.debug(`Writing kube config contents to ${kubeConfigPath}`)
-  const oidcUrlParsed = new url.URL(oidcUrl)
   const config = {
     apiVersion: 'v1',
     kind: 'Config',
@@ -20,7 +19,7 @@ export async function setKubernetesContext (oidcUrl: string, token: string, oidc
       {
         name: 'default-cluster',
         cluster: {
-          'insecure-skip-tls-verify': (k8sSkipTlsVerify.toLowerCase() === 'true'),
+          'insecure-skip-tls-verify': k8sSkipTlsVerify,
           server: oidcUrl
         }
       }
@@ -33,7 +32,7 @@ export async function setKubernetesContext (oidcUrl: string, token: string, oidc
             config: {
               'client-id': oidcUsername,
               'id-token': token,
-              'idp-issuer-url': `${oidcUrlParsed.origin}`
+              'idp-issuer-url': oidcUrl.origin
             },
             name: 'oidc'
           }
@@ -54,8 +53,9 @@ export async function setKubernetesContext (oidcUrl: string, token: string, oidc
   }
 
   fs.writeFileSync(kubeConfigPath, JSON.stringify(config))
+  console.log('kubectl config save')
 
   core.exportVariable('KUBECONFIG_BACKUP', process.env.KUBECONFIG)
-  core.exportVariable('KUBECONFIG', dirPath)
+  core.exportVariable('KUBECONFIG', kubeConfigPath)
   console.log('KUBECONFIG environment variable is set')
 }
