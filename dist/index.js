@@ -2762,7 +2762,6 @@ const core = __importStar(__nccwpck_require__(186));
 const io = __importStar(__nccwpck_require__(436));
 const path = __importStar(__nccwpck_require__(622));
 const fs = __importStar(__nccwpck_require__(747));
-const url = __importStar(__nccwpck_require__(835));
 function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify) {
     return __awaiter(this, void 0, void 0, function* () {
         const runnerTempDirectory = process.env.RUNNER_TEMP || '/tmp/';
@@ -2770,7 +2769,6 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
         yield io.mkdirP(dirPath);
         const kubeConfigPath = path.join(dirPath, 'custom-config');
         core.debug(`Writing kube config contents to ${kubeConfigPath}`);
-        const oidcUrlParsed = new url.URL(oidcUrl);
         const config = {
             apiVersion: 'v1',
             kind: 'Config',
@@ -2778,7 +2776,7 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
                 {
                     name: 'default-cluster',
                     cluster: {
-                        'insecure-skip-tls-verify': (k8sSkipTlsVerify.toLowerCase() === 'true'),
+                        'insecure-skip-tls-verify': k8sSkipTlsVerify,
                         server: oidcUrl
                     }
                 }
@@ -2791,7 +2789,7 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
                             config: {
                                 'client-id': oidcUsername,
                                 'id-token': token,
-                                'idp-issuer-url': `${oidcUrlParsed.origin}`
+                                'idp-issuer-url': oidcUrl.origin
                             },
                             name: 'oidc'
                         }
@@ -2811,8 +2809,9 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
             'current-context': 'default-context'
         };
         fs.writeFileSync(kubeConfigPath, JSON.stringify(config));
+        console.log('kubectl config save');
         core.exportVariable('KUBECONFIG_BACKUP', process.env.KUBECONFIG);
-        core.exportVariable('KUBECONFIG', dirPath);
+        core.exportVariable('KUBECONFIG', kubeConfigPath);
         console.log('KUBECONFIG environment variable is set');
     });
 }
@@ -2860,17 +2859,18 @@ const os = __importStar(__nccwpck_require__(87));
 const core = __importStar(__nccwpck_require__(186));
 const context = __importStar(__nccwpck_require__(954));
 const oidc = __importStar(__nccwpck_require__(544));
+const url_1 = __nccwpck_require__(835);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             if (os.platform() !== 'linux') {
                 throw new Error('Only supported on linux platform');
             }
-            const oidcUrl = core.getInput('oidc_url');
-            if (!oidcUrl) {
-                core.setFailed('OIDC url cannot be empty');
-                return;
+            const oidcUrlString = core.getInput('oidc_url');
+            if (!oidcUrlString) {
+                throw new Error('OIDC url cannot be empty');
             }
+            const oidcUrl = new url_1.URL(oidcUrlString);
             const oidcUsername = core.getInput('oidc_username');
             if (!oidcUsername) {
                 core.setFailed('OIDC username cannot be empty');
@@ -2886,14 +2886,12 @@ function run() {
                 core.setFailed('k8s url cannot be empty');
                 return;
             }
-            let k8sNamespace = core.getInput('k8s_namespace');
+            const k8sNamespace = core.getInput('k8s_namespace');
             if (!k8sNamespace) {
-                k8sNamespace = 'default';
+                core.setFailed('k8s url cannot be empty');
+                return;
             }
-            let k8sSkipTlsVerify = core.getInput('k8s_skip_tls_verify');
-            if (!k8sSkipTlsVerify) {
-                k8sSkipTlsVerify = 'true';
-            }
+            const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true');
             core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
     \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
             const token = yield oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
@@ -2915,25 +2913,6 @@ run().catch(core.setFailed);
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2948,28 +2927,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getOIDCToken = void 0;
-const core = __importStar(__nccwpck_require__(186));
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const base_64_1 = __importDefault(__nccwpck_require__(848));
 function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         let token = '';
-        try {
-            yield node_fetch_1.default(`${oidcUrl}&client_id=${oidcUsername}`, {
-                method: 'POST',
-                timeout: 10000,
-                headers: {
-                    Authorization: 'Basic ' + base_64_1.default.encode(oidcUsername + ':' + oidcPassword),
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .then(res => res.json())
-                .then(res => { token = res.access_token || ''; });
-        }
-        catch (error) {
-            console.log('Cannot get OIDC token');
-            core.setFailed(error.message);
-        }
+        const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
+        newSearchParams.append('client_id', oidcUsername);
+        const response = yield node_fetch_1.default(`${oidcUrl.origin}${oidcUrl.pathname}`, {
+            method: 'POST',
+            timeout: 10000,
+            headers: {
+                Authorization: 'Basic ' + base_64_1.default.encode(oidcUsername + ':' + oidcPassword),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: newSearchParams
+        });
+        const data = yield response.json();
+        console.log(response.ok);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers.raw());
+        console.log(response.headers.get('content-type'));
+        console.log(data);
+        token = data.access_token || '';
         return token;
     });
 }
