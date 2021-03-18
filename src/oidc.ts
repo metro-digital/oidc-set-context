@@ -7,26 +7,25 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
   let token = ''
   const newSearchParams = new URLSearchParams(oidcUrl.searchParams)
   newSearchParams.append('client_id', oidcUsername)
+  const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, {
+    method: 'POST',
+    timeout: 10000,
+    headers: {
+      Authorization: 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: newSearchParams
+  })
 
-  try {
-    await fetch(`${oidcUrl.origin}${oidcUrl.pathname}&client_id=${oidcUsername}`, {
-      method: 'POST',
-      timeout: 10000,
-      headers: {
-        Authorization: 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: newSearchParams
-    })
-      .then(res => {
-        core.debug(`OIDC status code: ${res.status}, ${res.json()}`)
-        return res.json()
-      })
-      .then(res => { token = res.access_token || '' })
-  } catch (error) {
-    console.log('Cannot get OIDC token')
-    core.setFailed(error.message)
-  }
+  const data = await response.json()
 
+  console.log(response.ok)
+  console.log(response.status)
+  console.log(response.statusText)
+  console.log(response.headers.raw())
+  console.log(response.headers.get('content-type'))
+
+  console.log(data)
+  token = data.access_token || ''
   return token
 }
