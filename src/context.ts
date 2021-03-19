@@ -20,7 +20,7 @@ export async function setKubernetesContext (oidcUrl: URL, token: string, oidcUse
         name: 'default-cluster',
         cluster: {
           'insecure-skip-tls-verify': k8sSkipTlsVerify,
-          server: oidcUrl
+          server: k8sUrl
         }
       }
     ],

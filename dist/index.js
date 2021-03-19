@@ -2777,7 +2777,7 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
                     name: 'default-cluster',
                     cluster: {
                         'insecure-skip-tls-verify': k8sSkipTlsVerify,
-                        server: oidcUrl
+                        server: k8sUrl
                     }
                 }
             ],
