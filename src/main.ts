@@ -36,7 +36,7 @@ export async function run (): Promise<void> {
 
     const k8sNamespace = core.getInput('k8s_namespace')
     if (!k8sNamespace) {
-      core.setFailed('k8s url cannot be empty')
+      core.setFailed('k8s namespace cannot be empty')
       return
     }
 
