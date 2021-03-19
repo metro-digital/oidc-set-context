@@ -18,26 +18,22 @@ export async function run (): Promise<void> {
 
     const oidcUsername = core.getInput('oidc_username')
     if (!oidcUsername) {
-      core.setFailed('OIDC username cannot be empty')
-      return
+      throw new Error('OIDC username cannot be empty')
     }
 
-    const oidcPassword = core.getInput('oidc_username')
+    const oidcPassword = core.getInput('oidc_password')
     if (!oidcPassword) {
-      core.setFailed('OIDC password cannot be empty')
-      return
+      throw new Error('OIDC password cannot be empty')
     }
 
     const k8sUrl = core.getInput('k8s_url')
     if (!k8sUrl) {
-      core.setFailed('k8s url cannot be empty')
-      return
+      throw new Error('k8s url cannot be empty')
     }
 
     const k8sNamespace = core.getInput('k8s_namespace')
     if (!k8sNamespace) {
-      core.setFailed('k8s namespace cannot be empty')
-      return
+      throw new Error('k8s namespace cannot be empty')
     }
 
     const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true')
@@ -46,7 +42,7 @@ export async function run (): Promise<void> {
     \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword)
-    context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
+    await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
   } catch (error) {
     core.setFailed(error.message)
   }
