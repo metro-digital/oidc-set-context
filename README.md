@@ -1,7 +1,3 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
-
 # Set kubectl context using OIDC authorization
 
 The action to setup kubectl context using OIDC authorization. To provide OIDC token it will make request to this provider.

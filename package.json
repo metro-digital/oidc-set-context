@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Github action to set kubectl context using OIDC authorization",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "build": "ncc build src/main.ts",
     "lint": "eslint src/**/*.ts",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/metro-digital-inner-source/oidc-set-context.git"
+    "url": "git+https://github.com/metro-digital/oidc-set-context.git"
   },
   "keywords": [],
   "author": "METRO Digital GmbH",
@@ -47,9 +47,9 @@
     "typescript": "^4.2.3"
   },
   "bugs": {
-    "url": "https://github.com/metro-digital-inner-source/oidc-set-context/issues"
+    "url": "https://github.com/metro-digital/oidc-set-context/issues"
   },
-  "homepage": "https://github.com/metro-digital-inner-source/oidc-set-context#readme",
+  "homepage": "https://github.com/metro-digital/oidc-set-context#readme",
   "directories": {
     "test": "tests"
   }
