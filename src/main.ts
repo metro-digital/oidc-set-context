@@ -1,4 +1,3 @@
-import * as os from 'os'
 import * as core from '@actions/core'
 import * as context from './context'
 import * as oidc from './oidc'

@@ -2854,7 +2854,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
-const os = __importStar(__nccwpck_require__(87));
 const core = __importStar(__nccwpck_require__(186));
 const context = __importStar(__nccwpck_require__(954));
 const oidc = __importStar(__nccwpck_require__(544));
@@ -2862,9 +2861,6 @@ const url_1 = __nccwpck_require__(835);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (os.platform() !== 'linux') {
-                throw new Error('Only supported on linux platform');
-            }
             const oidcUrlString = core.getInput('oidc_url');
             if (!oidcUrlString) {
                 throw new Error('OIDC url cannot be empty');
