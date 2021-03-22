@@ -6,10 +6,6 @@ import { URL } from 'url'
 
 export async function run (): Promise<void> {
   try {
-    if (os.platform() !== 'linux') {
-      throw new Error('Only supported on linux platform')
-    }
-
     const oidcUrlString = core.getInput('oidc_url')
     if (!oidcUrlString) {
       throw new Error('OIDC url cannot be empty')
