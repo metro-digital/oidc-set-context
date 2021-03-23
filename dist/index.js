@@ -2883,6 +2883,7 @@ function run() {
                 throw new Error('k8s namespace cannot be empty');
             }
             const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true');
+            core.setSecret(oidcPassword);
             core.debug(`Given input
       oidc_url: ${oidcUrl}
       oidc_username: ${oidcUsername}
