@@ -1,6 +1,6 @@
 # Set kubectl context using OIDC authorization
 
-The action to setup kubectl context using OIDC authorization. To provide OIDC token it will make request to this provider.
+The Action will make a call to oidc_url provider, using oidc_username and oidc_password as credentials, and the token from reposonse use to set kubectl context with OIDC authorization.
 
 ## Inputs
 
@@ -26,10 +26,9 @@ Cluster namespace. Default value `default`.
 
 ### `k8s_skip_tls_verify`
 
-Cluster skip tls verification. Default value `true`.
+Cluster skip tls verification. Default value `false`.
 
 ## Outputs
-
 
 ## Example usage
 

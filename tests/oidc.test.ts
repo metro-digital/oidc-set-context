@@ -3,15 +3,12 @@ import base64 from 'base-64'
 import { mocked } from 'ts-jest/utils'
 import * as oidc from '../src/oidc'
 
-jest.mock('node-fetch', () => {
-  return jest.fn()
-})
+jest.mock('node-fetch', () => { return jest.fn() })
 
 describe('context tests', () => {
   beforeAll(() => {
     jest.clearAllMocks()
     mocked(fetch).mockClear()
-    console.log = jest.fn()
   })
 
   const oidcUrl = new URL('https://example.com/a/b/c?a=1')

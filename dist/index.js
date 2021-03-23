@@ -2809,9 +2809,9 @@ function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace
             'current-context': 'default-context'
         };
         fs.writeFileSync(kubeConfigPath, JSON.stringify(config));
-        console.log('kubectl config save');
+        core.info('kubectl config save');
         core.exportVariable('KUBECONFIG', kubeConfigPath);
-        console.log('KUBECONFIG environment variable is set');
+        core.info('KUBECONFIG environment variable is set');
     });
 }
 exports.setKubernetesContext = setKubernetesContext;
@@ -2883,8 +2883,13 @@ function run() {
                 throw new Error('k8s namespace cannot be empty');
             }
             const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true');
-            core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
-    \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
+            core.debug(`Given input
+      oidc_url: ${oidcUrl}
+      oidc_username: ${oidcUsername}
+      oidc_password: ${oidcPassword}
+      k8s_url: ${k8sUrl}
+      k8s_namespace: ${k8sNamespace}
+      k8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
             const token = yield oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
             yield context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
         }
@@ -2942,7 +2947,7 @@ const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const base_64_1 = __importDefault(__nccwpck_require__(848));
 function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('OIDC get token');
+        core.info('OIDC get token');
         const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
         newSearchParams.append('client_id', oidcUsername);
         const request = {
@@ -2955,15 +2960,20 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
             body: newSearchParams
         };
         core.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
-        core.debug(`Request:\n${request}`);
+        core.debug(`Request:
+    ${request}`);
         const response = yield node_fetch_1.default(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
         const data = yield response.json();
-        core.debug(`Response\nstatus code: ${response.status}\nstatus text: "${response.statusText}"`);
+        core.debug(`Response
+    status code: ${response.status}
+    status text: "${response.statusText}"`);
         const token = data.access_token;
         if (!token || !response.ok) {
-            throw new Error(`OIDC request fail - response\nstatus code: ${response.status}\nstatus text: "${response.statusText}"`);
+            throw new Error(`OIDC request fail - response
+      status code: ${response.status}
+      status text: "${response.statusText}"`);
         }
-        console.log('OIDC token receive');
+        core.info('OIDC token receive');
         return token;
     });
 }

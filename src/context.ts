@@ -53,8 +53,8 @@ export async function setKubernetesContext (oidcUrl: URL, token: string, oidcUse
   }
 
   fs.writeFileSync(kubeConfigPath, JSON.stringify(config))
-  console.log('kubectl config save')
+  core.info('kubectl config save')
 
   core.exportVariable('KUBECONFIG', kubeConfigPath)
-  console.log('KUBECONFIG environment variable is set')
+  core.info('KUBECONFIG environment variable is set')
 }

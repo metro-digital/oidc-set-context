@@ -33,8 +33,15 @@ export async function run (): Promise<void> {
 
     const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true')
 
-    core.debug(`Given input\n\toidc_url: ${oidcUrl}\n\toidc_username: ${oidcUsername}\n\toidc_password: ${oidcPassword}
-    \tk8s_url: ${k8sUrl}\n\tk8s_namespace: ${k8sNamespace}\n\tk8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
+    core.setSecret(oidcPassword)
+
+    core.debug(`Given input
+      oidc_url: ${oidcUrl}
+      oidc_username: ${oidcUsername}
+      oidc_password: ${oidcPassword}
+      k8s_url: ${k8sUrl}
+      k8s_namespace: ${k8sNamespace}
+      k8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword)
     await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
