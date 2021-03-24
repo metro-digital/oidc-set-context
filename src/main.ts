@@ -38,7 +38,6 @@ export async function run (): Promise<void> {
     core.debug(`Given input
       oidc_url: ${oidcUrl}
       oidc_username: ${oidcUsername}
-      oidc_password: ${oidcPassword}
       k8s_url: ${k8sUrl}
       k8s_namespace: ${k8sNamespace}
       k8s_skip_tls_verify: ${k8sSkipTlsVerify}`)

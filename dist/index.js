@@ -2887,7 +2887,6 @@ function run() {
             core.debug(`Given input
       oidc_url: ${oidcUrl}
       oidc_username: ${oidcUsername}
-      oidc_password: ${oidcPassword}
       k8s_url: ${k8sUrl}
       k8s_namespace: ${k8sNamespace}
       k8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
@@ -2955,7 +2954,7 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
             method: 'POST',
             timeout: 10000,
             headers: {
-                Authorization: 'Basic ' + base_64_1.default.encode(oidcUsername + ':' + oidcPassword),
+                Authorization: 'Basic BASE64_AUTH',
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: newSearchParams
@@ -2963,6 +2962,7 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
         core.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
         core.debug(`Request:
     ${request}`);
+        request.headers.Authorization = 'Basic ' + base_64_1.default.encode(oidcUsername + ':' + oidcPassword);
         const response = yield node_fetch_1.default(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
         const data = yield response.json();
         core.debug(`Response

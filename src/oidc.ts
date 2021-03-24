@@ -13,7 +13,7 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
     method: 'POST',
     timeout: 10000,
     headers: {
-      Authorization: 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword),
+      Authorization: 'Basic BASE64_AUTH',
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: newSearchParams
@@ -22,6 +22,8 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
   core.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`)
   core.debug(`Request:
     ${request}`)
+
+  request.headers.Authorization = 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword)
   const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, request)
   const data = await response.json()
 
