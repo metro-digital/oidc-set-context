@@ -38,6 +38,8 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
       status text: "${response.statusText}"`)
   }
 
+  core.setSecret(token)
+
   core.info('OIDC token receive')
   return token
 }

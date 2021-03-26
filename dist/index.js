@@ -2974,6 +2974,7 @@ function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
       status code: ${response.status}
       status text: "${response.statusText}"`);
         }
+        core.setSecret(token);
         core.info('OIDC token receive');
         return token;
     });
