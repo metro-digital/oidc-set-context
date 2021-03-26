@@ -1,19 +1,52 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as context from './context'
+import * as oidc from './oidc'
+import { URL } from 'url'
 
-async function run(): Promise<void> {
+export async function run (): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const oidcUrlString = core.getInput('oidc_url')
+    if (!oidcUrlString) {
+      throw new Error('OIDC url cannot be empty')
+    }
+    const oidcUrl = new URL(oidcUrlString)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const oidcUsername = core.getInput('oidc_username')
+    if (!oidcUsername) {
+      throw new Error('OIDC username cannot be empty')
+    }
 
-    core.setOutput('time', new Date().toTimeString())
+    const oidcPassword = core.getInput('oidc_password')
+    if (!oidcPassword) {
+      throw new Error('OIDC password cannot be empty')
+    }
+
+    const k8sUrl = core.getInput('k8s_url')
+    if (!k8sUrl) {
+      throw new Error('k8s url cannot be empty')
+    }
+
+    const k8sNamespace = core.getInput('k8s_namespace')
+    if (!k8sNamespace) {
+      throw new Error('k8s namespace cannot be empty')
+    }
+
+    const k8sSkipTlsVerify = (core.getInput('k8s_skip_tls_verify') === 'true')
+
+    core.setSecret(oidcPassword)
+
+    core.debug(`Given input
+      oidc_url: ${oidcUrl}
+      oidc_username: ${oidcUsername}
+      k8s_url: ${k8sUrl}
+      k8s_namespace: ${k8sNamespace}
+      k8s_skip_tls_verify: ${k8sSkipTlsVerify}`)
+
+    const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword)
+    await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
-run()
+run().catch(core.setFailed)
