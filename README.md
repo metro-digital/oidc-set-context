@@ -1,6 +1,6 @@
 # Set kubectl context using OIDC authorization
 
-The Action will make a call to oidc_url provider, using oidc_username and oidc_password as credentials, and the token from reposonse use to set kubectl context with OIDC authorization.
+The Action will make a call to oidc_url provider, using oidc_username and oidc_password as credentials, and the token from response is used to set up a kubectl context with OIDC authorization.
 
 ## Inputs
 
