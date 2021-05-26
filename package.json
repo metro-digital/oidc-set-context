@@ -29,7 +29,7 @@
     "@types/node-fetch": "^2.5.10",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
-    "@vercel/ncc": "~0.27.x",
+    "@vercel/ncc": "~0.28.x",
     "base-64": "^1.0.0",
     "eslint": "^7.27.0",
     "eslint-config-standard": "^16.0.3",
