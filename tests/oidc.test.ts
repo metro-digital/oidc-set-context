@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { mocked } from 'ts-jest/utils'
+import { mocked } from 'jest-mock'
 import * as oidc from '../src/oidc'
 
 jest.mock('node-fetch', () => { return jest.fn() })
@@ -15,6 +15,7 @@ describe('context tests', () => {
   const oidcPassword = 'password'
 
   it('Get OIDC token', async () => {
+    // @ts-ignore
     mocked(fetch).mockImplementation((): Promise<any> => {
       return Promise.resolve({
         ok: true,
