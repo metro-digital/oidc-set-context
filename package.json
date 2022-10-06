@@ -18,8 +18,8 @@
   "author": "METRO Digital GmbH",
   "license": "MIT",
   "devDependencies": {
-    "@actions/core": "^1.3.0",
-    "@actions/io": "^1.1.0",
+    "@actions/core": "^1.10.0",
+    "@actions/io": "^1.1.2",
     "@fastify/pre-commit": "^2.0.2",
     "@types/jest": "^29.1.1",
     "@types/node": "^18.8.2",
