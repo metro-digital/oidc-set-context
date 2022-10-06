@@ -5,7 +5,7 @@
   "description": "Github action to set kubectl context using OIDC authorization",
   "main": "src/main.js",
   "scripts": {
-    "build": "ncc build src/main.ts",
+    "build": "esbuild --bundle --outfile=./dist/index.js --platform=node ./src/main.ts",
     "lint": "eslint src/**/*.ts",
     "test": "jest -useStderr --detectOpenHandles",
     "all": "npm run build && npm run lint && npm test"
@@ -26,7 +26,7 @@
     "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
-    "@vercel/ncc": "~0.34.x",
+    "esbuild": "^0.15.10",
     "eslint": "^8.24.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-jest": "^27.1.1",
