@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import fetch from 'node-fetch'
-import base64 from 'base-64'
 import { URL } from 'url'
 
 export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPassword: string) {
@@ -23,7 +22,7 @@ export async function getOIDCToken (oidcUrl: URL, oidcUsername: string, oidcPass
   core.debug(`Request:
     ${request}`)
 
-  request.headers.Authorization = 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword)
+  request.headers.Authorization = 'Basic ' + Buffer.from(oidcUsername + ':' + oidcPassword, 'ascii').toString('base64')
   const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, request)
   const data = await response.json()
 

@@ -1,5 +1,4 @@
 import fetch from 'node-fetch'
-import base64 from 'base-64'
 import { mocked } from 'ts-jest/utils'
 import * as oidc from '../src/oidc'
 
@@ -36,7 +35,7 @@ describe('context tests', () => {
       method: 'POST',
       timeout: 10000,
       headers: {
-        Authorization: 'Basic ' + base64.encode(oidcUsername + ':' + oidcPassword),
+        Authorization: 'Basic ' + Buffer.from(oidcUsername + ':' + oidcPassword, 'ascii').toString('base64'),
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }
