@@ -44,7 +44,7 @@ export async function run (): Promise<void> {
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword)
     await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify)
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message)
   }
 }
