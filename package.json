@@ -7,8 +7,7 @@
   "scripts": {
     "build": "esbuild --bundle --outfile=./dist/index.js --platform=node ./src/main.ts",
     "lint": "eslint src/**/*.ts",
-    "test": "jest -useStderr --detectOpenHandles",
-    "all": "npm run build && npm run lint && npm test"
+    "test": "jest -useStderr --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -17,10 +16,13 @@
   "keywords": [],
   "author": "METRO Digital GmbH",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "@actions/core": "^1.10.0",
-    "@actions/io": "^1.1.2",
+    "@actions/io": "^1.1.2"
+  },
+  "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
+    "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.0",
     "@types/node-fetch": "^2.6.2",
@@ -50,6 +52,6 @@
     "test"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   }
 }
