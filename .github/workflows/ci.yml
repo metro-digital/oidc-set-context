@@ -1,4 +1,4 @@
-name: 'build-test'
+name: 'CI'
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
@@ -50,12 +50,7 @@ jobs:
         github.event.pull_request.user.login == 'dependabot[bot]'
     needs:
       - lint
-      - test-unit
-      - test-integration_waas_v1alpha3
-      - test-integration_waas_v1alpha4
-      - test-integration_waas_v1beta1
-      - test-integration_waas_v2
-      - test-integration_waas_v2latest
+      - test
       - integrity
     runs-on: ubuntu-latest
     permissions:
