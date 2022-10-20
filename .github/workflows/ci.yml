@@ -1,0 +1,63 @@
+name: 'CI'
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - run: |
+          npm install
+      - run: |
+          npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - run: |
+          npm install
+      - run: |
+          npm run test
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - name: Build action
+      run: |
+        npm ci &&
+        npm run build
+    - name: Repository Integrity Check
+      run: |
+        git diff --quiet dist
+  automerge:
+    name: Automerge Dependabot PRs
+    if: >
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.user.login == 'dependabot[bot]'
+    needs:
+      - lint
+      - test
+      - integrity
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v3.4.1
+        with:
+          exclude: '@actions/core,@actions/io'

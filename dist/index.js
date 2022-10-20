@@ -25,26 +25,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var __async = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -5525,137 +5505,131 @@ var core = __toESM(require_core());
 var io = __toESM(require_io());
 var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
-function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify) {
-  return __async(this, null, function* () {
-    const runnerTempDirectory = process.env.RUNNER_TEMP || "/tmp/";
-    const dirPath = path.join(runnerTempDirectory, `kube_config_${Date.now()}`);
-    yield io.mkdirP(dirPath);
-    const kubeConfigPath = path.join(dirPath, "custom-config");
-    core.debug(`Writing kube config contents to ${kubeConfigPath}`);
-    const config = {
-      apiVersion: "v1",
-      kind: "Config",
-      clusters: [
-        {
-          name: "default-cluster",
-          cluster: {
-            "insecure-skip-tls-verify": k8sSkipTlsVerify,
-            server: k8sUrl
+async function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify) {
+  const runnerTempDirectory = process.env.RUNNER_TEMP || "/tmp/";
+  const dirPath = path.join(runnerTempDirectory, `kube_config_${Date.now()}`);
+  await io.mkdirP(dirPath);
+  const kubeConfigPath = path.join(dirPath, "custom-config");
+  core.debug(`Writing kube config contents to ${kubeConfigPath}`);
+  const config = {
+    apiVersion: "v1",
+    kind: "Config",
+    clusters: [
+      {
+        name: "default-cluster",
+        cluster: {
+          "insecure-skip-tls-verify": k8sSkipTlsVerify,
+          server: k8sUrl
+        }
+      }
+    ],
+    users: [
+      {
+        name: "default-user",
+        user: {
+          "auth-provider": {
+            config: {
+              "client-id": oidcUsername,
+              "id-token": token,
+              "idp-issuer-url": oidcUrl.origin
+            },
+            name: "oidc"
           }
         }
-      ],
-      users: [
-        {
-          name: "default-user",
-          user: {
-            "auth-provider": {
-              config: {
-                "client-id": oidcUsername,
-                "id-token": token,
-                "idp-issuer-url": oidcUrl.origin
-              },
-              name: "oidc"
-            }
-          }
-        }
-      ],
-      contexts: [
-        {
-          context: {
-            cluster: "default-cluster",
-            namespace: k8sNamespace,
-            user: "default-user"
-          },
-          name: "default-context"
-        }
-      ],
-      "current-context": "default-context"
-    };
-    fs.writeFileSync(kubeConfigPath, JSON.stringify(config));
-    core.info("kubectl config save");
-    core.exportVariable("KUBECONFIG", kubeConfigPath);
-    core.info("KUBECONFIG environment variable is set");
-  });
+      }
+    ],
+    contexts: [
+      {
+        context: {
+          cluster: "default-cluster",
+          namespace: k8sNamespace,
+          user: "default-user"
+        },
+        name: "default-context"
+      }
+    ],
+    "current-context": "default-context"
+  };
+  fs.writeFileSync(kubeConfigPath, JSON.stringify(config));
+  core.info("kubectl config save");
+  core.exportVariable("KUBECONFIG", kubeConfigPath);
+  core.info("KUBECONFIG environment variable is set");
 }
 
 // src/oidc.ts
 var core2 = __toESM(require_core());
 var import_node_fetch = __toESM(require_lib3());
-function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
-  return __async(this, null, function* () {
-    core2.info("OIDC get token");
-    const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
-    newSearchParams.append("client_id", oidcUsername);
-    const request = {
-      method: "POST",
-      timeout: 1e4,
-      headers: {
-        Authorization: "Basic BASE64_AUTH",
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: newSearchParams
-    };
-    core2.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
-    core2.debug(`Request:
+async function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
+  core2.info("OIDC get token");
+  const newSearchParams = new URLSearchParams(oidcUrl.searchParams);
+  newSearchParams.append("client_id", oidcUsername);
+  const request = {
+    method: "POST",
+    timeout: 1e4,
+    headers: {
+      Authorization: "Basic BASE64_AUTH",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: newSearchParams
+  };
+  core2.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
+  core2.debug(`Request:
     ${request}`);
-    request.headers.Authorization = "Basic " + Buffer.from(oidcUsername + ":" + oidcPassword, "ascii").toString("base64");
-    const response = yield (0, import_node_fetch.default)(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
-    const data = yield response.json();
-    core2.debug(`Response
+  request.headers.Authorization = "Basic " + Buffer.from(oidcUsername + ":" + oidcPassword, "ascii").toString("base64");
+  const response = await (0, import_node_fetch.default)(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
+  const data = await response.json();
+  core2.debug(`Response
     status code: ${response.status}
     status text: "${response.statusText}"`);
-    const token = data.access_token;
-    if (!token || !response.ok) {
-      throw new Error(`OIDC request fail - response
+  const token = data.access_token;
+  if (!token || !response.ok) {
+    throw new Error(`OIDC request fail - response
       status code: ${response.status}
       status text: "${response.statusText}"`);
-    }
-    core2.setSecret(token);
-    core2.info("OIDC token receive");
-    return token;
-  });
+  }
+  core2.setSecret(token);
+  core2.info("OIDC token receive");
+  return token;
 }
 
 // src/main.ts
 var import_url = require("url");
-function run() {
-  return __async(this, null, function* () {
-    try {
-      const oidcUrlString = core3.getInput("oidc_url");
-      if (!oidcUrlString) {
-        throw new Error("OIDC url cannot be empty");
-      }
-      const oidcUrl = new import_url.URL(oidcUrlString);
-      const oidcUsername = core3.getInput("oidc_username");
-      if (!oidcUsername) {
-        throw new Error("OIDC username cannot be empty");
-      }
-      const oidcPassword = core3.getInput("oidc_password");
-      if (!oidcPassword) {
-        throw new Error("OIDC password cannot be empty");
-      }
-      const k8sUrl = core3.getInput("k8s_url");
-      if (!k8sUrl) {
-        throw new Error("k8s url cannot be empty");
-      }
-      const k8sNamespace = core3.getInput("k8s_namespace");
-      if (!k8sNamespace) {
-        throw new Error("k8s namespace cannot be empty");
-      }
-      const k8sSkipTlsVerify = core3.getInput("k8s_skip_tls_verify") === "true";
-      core3.setSecret(oidcPassword);
-      core3.debug(`Given input
+async function run() {
+  try {
+    const oidcUrlString = core3.getInput("oidc_url");
+    if (!oidcUrlString) {
+      throw new Error("OIDC url cannot be empty");
+    }
+    const oidcUrl = new import_url.URL(oidcUrlString);
+    const oidcUsername = core3.getInput("oidc_username");
+    if (!oidcUsername) {
+      throw new Error("OIDC username cannot be empty");
+    }
+    const oidcPassword = core3.getInput("oidc_password");
+    if (!oidcPassword) {
+      throw new Error("OIDC password cannot be empty");
+    }
+    const k8sUrl = core3.getInput("k8s_url");
+    if (!k8sUrl) {
+      throw new Error("k8s url cannot be empty");
+    }
+    const k8sNamespace = core3.getInput("k8s_namespace");
+    if (!k8sNamespace) {
+      throw new Error("k8s namespace cannot be empty");
+    }
+    const k8sSkipTlsVerify = core3.getInput("k8s_skip_tls_verify") === "true";
+    core3.setSecret(oidcPassword);
+    core3.debug(`Given input
       oidc_url: ${oidcUrl}
       oidc_username: ${oidcUsername}
       k8s_url: ${k8sUrl}
       k8s_namespace: ${k8sNamespace}
       k8s_skip_tls_verify: ${k8sSkipTlsVerify}`);
-      const token = yield getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
-      yield setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
-    } catch (error) {
-      core3.setFailed(error.message);
-    }
-  });
+    const token = await getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
+    await setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
+  } catch (error) {
+    core3.setFailed(error.message);
+  }
 }
 run().catch(core3.setFailed);
 // Annotate the CommonJS export names for ESM import in node:
