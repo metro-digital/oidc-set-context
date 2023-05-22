@@ -24,7 +24,7 @@
     "@fastify/pre-commit": "^2.0.2",
     "@tsconfig/node16": "^1.0.4",
     "@types/jest": "^29.5.1",
-    "@types/node": "^20.1.4",
+    "@types/node": "^20.2.3",
     "@types/node-fetch": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.7",
