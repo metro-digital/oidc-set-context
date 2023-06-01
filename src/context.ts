@@ -1,4 +1,3 @@
-
 import * as core from '@actions/core'
 import * as io from '@actions/io'
 import * as path from 'path'
