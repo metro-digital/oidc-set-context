@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
-    "@tsconfig/node16": "^16.1.0",
+    "@tsconfig/node16": "^16.1.1",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.5.7",
     "@types/node-fetch": "^2.6.4",
