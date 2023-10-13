@@ -1,13 +1,13 @@
-import fetch from 'node-fetch'
 import { mocked } from 'jest-mock'
 import * as oidc from '../src/oidc'
 
-jest.mock('node-fetch', () => { return jest.fn() })
+// @ts-ignore
+global.fetch = jest.fn();
 
 describe('context tests', () => {
   beforeAll(() => {
     jest.clearAllMocks()
-    mocked(fetch).mockClear()
+    mocked(global.fetch).mockClear()
   })
 
   const oidcUrl = new URL('https://example.com/a/b/c?a=1')

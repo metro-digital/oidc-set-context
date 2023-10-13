@@ -36,7 +36,7 @@ jobs:
         persist-credentials: false
     - uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '20'
     - name: Build action
       run: |
         npm ci &&
@@ -44,6 +44,7 @@ jobs:
     - name: Repository Integrity Check
       run: |
         git diff --quiet dist
+
   automerge:
     name: Automerge Dependabot PRs
     if: >
