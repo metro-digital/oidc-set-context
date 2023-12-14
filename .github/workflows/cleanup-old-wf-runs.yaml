@@ -1,0 +1,22 @@
+name: Clean-up old workflow runs
+
+on:
+  schedule:
+    - cron: "15 5 * * 0" # 5:15am every Sunday
+  workflow_dispatch:
+
+jobs:
+  do-clean-up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run workflow housekeeper
+        uses: josiahsiegel/workflow-housekeeper@v1.0.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          ignore-branch-workflows: false
+          retention-time: "4 weeks"
+          retain-run-count: 30
+          dry-run: false
