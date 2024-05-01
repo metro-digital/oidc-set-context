@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run workflow housekeeper
-        uses: josiahsiegel/workflow-housekeeper@v1.0.4
+        uses: josiahsiegel/workflow-housekeeper@v1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
