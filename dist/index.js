@@ -2239,6 +2239,7 @@ var require_decodeText = __commonJS({
             return decoders.utf8;
           case "latin1":
           case "ascii":
+          // TODO: Make these a separate, strict decoder?
           case "us-ascii":
           case "iso-8859-1":
           case "iso8859-1":
@@ -2938,6 +2939,7 @@ var require_basename = __commonJS({
       for (var i = path2.length - 1; i >= 0; --i) {
         switch (path2.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path2 = path2.slice(i + 1);
             return path2 === ".." || path2 === "." ? "" : path2;
@@ -4172,7 +4174,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -19402,8 +19418,8 @@ var core3 = __toESM(require_core());
 // src/context.ts
 var core = __toESM(require_core());
 var io = __toESM(require_io());
-var path = __toESM(require("path"));
-var fs = __toESM(require("fs"));
+var path = __toESM(require("node:path"));
+var fs = __toESM(require("node:fs"));
 async function setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify) {
   const runnerTempDirectory = process.env.RUNNER_TEMP || "/tmp/";
   const dirPath = path.join(runnerTempDirectory, `kube_config_${Date.now()}`);
@@ -19471,9 +19487,8 @@ async function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
     body: newSearchParams
   };
   core2.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
-  core2.debug(`Request:
-    ${request}`);
-  request.headers.Authorization = "Basic " + Buffer.from(oidcUsername + ":" + oidcPassword, "ascii").toString("base64");
+  core2.debug(`Request: ${JSON.stringify(request, null, 2)}`);
+  request.headers.Authorization = "Basic " + Buffer.from(`${oidcUsername}:${oidcPassword}`, "ascii").toString("base64");
   const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
   const data = await response.json();
   core2.debug(`Response
@@ -19491,14 +19506,14 @@ async function getOIDCToken(oidcUrl, oidcUsername, oidcPassword) {
 }
 
 // src/main.ts
-var import_url = require("url");
+var import_node_url = require("node:url");
 async function run() {
   try {
     const oidcUrlString = core3.getInput("oidc_url");
     if (!oidcUrlString) {
       throw new Error("OIDC url cannot be empty");
     }
-    const oidcUrl = new import_url.URL(oidcUrlString);
+    const oidcUrl = new import_node_url.URL(oidcUrlString);
     const oidcUsername = core3.getInput("oidc_username");
     if (!oidcUsername) {
       throw new Error("OIDC username cannot be empty");
