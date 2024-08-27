@@ -6,7 +6,10 @@
   "main": "src/main.js",
   "scripts": {
     "build": "esbuild --bundle --outfile=./dist/index.js --platform=node ./src/main.ts",
-    "lint": "eslint src/**/*.ts",
+    "lint": "npx @biomejs/biome lint",
+    "lint:fix": "npx @biomejs/biome lint --write",
+    "format": "npx @biomejs/biome format",
+    "format:fix": "npx @biomejs/biome format --write",
     "test": "jest -useStderr --detectOpenHandles"
   },
   "repository": {
@@ -44,6 +47,6 @@
     "test"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.16.0"
   }
 }
