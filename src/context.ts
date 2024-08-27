@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import * as io from "@actions/io";
-import * as path from "path";
-import * as fs from "fs";
-import { URL } from "url";
+import * as path from "node:path";
+import * as fs from "node:fs";
+import type { URL } from "node:url";
 
 export async function setKubernetesContext(
   oidcUrl: URL,

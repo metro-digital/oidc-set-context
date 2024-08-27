@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as context from "./context";
 import * as oidc from "./oidc";
-import { URL } from "url";
+import { URL } from "node:url";
 
 export async function run(): Promise<void> {
   try {
@@ -44,6 +44,7 @@ export async function run(): Promise<void> {
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
     await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {
     core.setFailed(error.message);
   }

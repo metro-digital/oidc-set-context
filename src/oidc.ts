@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { URL } from "url";
+import type { URL } from "node:url";
 
 export async function getOIDCToken(oidcUrl: URL, oidcUsername: string, oidcPassword: string) {
   core.info("OIDC get token");
@@ -18,11 +18,12 @@ export async function getOIDCToken(oidcUrl: URL, oidcUsername: string, oidcPassw
   };
 
   core.debug(`URL: ${oidcUrl.origin}${oidcUrl.pathname}`);
-  core.debug(`Request:
-    ${request}`);
+  core.debug(`Request: ${JSON.stringify(request, null, 2)}`);
 
-  request.headers.Authorization = "Basic " + Buffer.from(oidcUsername + ":" + oidcPassword, "ascii").toString("base64");
+  // biome-ignore lint/style/useTemplate: <explanation>
+  request.headers.Authorization = "Basic " + Buffer.from(`${oidcUsername}:${oidcPassword}`, "ascii").toString("base64");
   const response = await fetch(`${oidcUrl.origin}${oidcUrl.pathname}`, request);
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const data = (await response.json()) as { [key: string]: any };
 
   core.debug(`Response
