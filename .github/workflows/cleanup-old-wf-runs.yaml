@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Run workflow housekeeper
         uses: josiahsiegel/workflow-housekeeper@v1.1.0
         env:
