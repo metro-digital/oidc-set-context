@@ -1,13 +1,12 @@
-import { mocked } from "jest-mock";
+import { describe, expect, it, beforeAll, vi } from "vitest";
 import * as oidc from "../src/oidc";
 
-// @ts-ignore
-global.fetch = jest.fn();
+global.fetch = vi.fn() as typeof fetch;
 
 describe("context tests", () => {
   beforeAll(() => {
-    jest.clearAllMocks();
-    mocked(global.fetch).mockClear();
+    vi.clearAllMocks();
+    vi.mocked(global.fetch).mockClear();
   });
 
   const oidcUrl = new URL("https://example.com/a/b/c?a=1");
@@ -15,8 +14,7 @@ describe("context tests", () => {
   const oidcPassword = "password";
 
   it("Get OIDC token", async () => {
-    // @ts-ignore
-    mocked(fetch).mockImplementation((): Promise<any> => {
+    vi.mocked(fetch).mockImplementation((): Promise<Response> => {
       return Promise.resolve({
         ok: true,
         status: 200,
@@ -24,7 +22,7 @@ describe("context tests", () => {
         json() {
           return Promise.resolve({ access_token: "mytoken" });
         },
-      });
+      } as Response);
     });
 
     const newSearchParams = new URLSearchParams();
@@ -36,13 +34,13 @@ describe("context tests", () => {
       method: "POST",
       timeout: 10000,
       headers: {
-        Authorization: "Basic " + Buffer.from(oidcUsername + ":" + oidcPassword, "ascii").toString("base64"),
+        Authorization: `Basic ${Buffer.from(`${oidcUsername}:${oidcPassword}`, "ascii").toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
     };
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
-    expect(mocked(fetch).mock.calls.length).toBe(1);
+    expect(vi.mocked(fetch).mock.calls.length).toBe(1);
     expect(fetch).toBeCalledWith("https://example.com/a/b/c", request);
     expect(token).toBeDefined();
     expect(token).toBe("mytoken");

@@ -1,9 +1,10 @@
+import { describe, expect, it, beforeAll, afterAll, vi } from "vitest";
 import * as io from "@actions/io";
-import { promises as fs } from "fs";
-import * as path from "path";
+import { promises as fs } from "node:fs";
+import * as path from "node:path";
 import * as context from "../src/context";
 
-Date.now = jest.fn(() => 1616422647068);
+Date.now = vi.fn(() => 1616422647068);
 const tempDir = path.join(__dirname, "runner", "temp");
 process.env.RUNNER_TEMP = tempDir;
 

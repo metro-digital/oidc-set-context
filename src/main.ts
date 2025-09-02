@@ -44,9 +44,8 @@ export async function run(): Promise<void> {
 
     const token = await oidc.getOIDCToken(oidcUrl, oidcUsername, oidcPassword);
     await context.setKubernetesContext(oidcUrl, token, oidcUsername, k8sUrl, k8sNamespace, k8sSkipTlsVerify);
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  } catch (error: any) {
-    core.setFailed(error.message);
+  } catch (error: unknown) {
+    core.setFailed((error as Error).message);
   }
 }
 
