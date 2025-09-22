@@ -28,7 +28,7 @@
     "@fastify/pre-commit": "^2.2.0",
     "@tsconfig/node24": "^24.0.1",
     "@types/node": "^24.4.0",
-    "esbuild": "^0.25.9",
+    "esbuild": "^0.25.10",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
