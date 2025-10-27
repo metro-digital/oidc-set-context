@@ -30,7 +30,7 @@
     "@types/node": "^24.9.0",
     "esbuild": "^0.25.11",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.4"
   },
   "bugs": {
     "url": "https://github.com/metro-digital/oidc-set-context/issues"
