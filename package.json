@@ -27,7 +27,7 @@
     "@biomejs/biome": "^2.4.10",
     "@fastify/pre-commit": "^2.2.1",
     "@tsconfig/node24": "^24.0.4",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
